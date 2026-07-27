@@ -1,26 +1,29 @@
 const mysql = require("mysql2");
+require("dotenv").config();
 
-function connectWithRetry() {
-  const connection = mysql.createConnection({
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-  });
+const pool = mysql.createPool({
+  host: process.env.DB_HOST,
+  port: Number(process.env.DB_PORT) || 3306,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
 
-  connection.connect((err) => {
-    if (err) {
-      console.log("❌ MySQL not ready. Retrying in 5 seconds...");
-      setTimeout(connectWithRetry, 5000);
-      return;
-    }
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
 
-    console.log("✅ Connected to MySQL");
-    module.exports = connection;
-  });
+  enableKeepAlive: true,
+  keepAliveInitialDelay: 0
+});
 
-  return connection;
-}
+pool.getConnection((error, connection) => {
+  if (error) {
+    console.error("❌ MySQL connection failed:", error.message);
+    return;
+  }
 
-module.exports = connectWithRetry();
+  console.log("✅ Connected to MySQL connection pool");
+  connection.release();
+});
+
+module.exports = pool;
