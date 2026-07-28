@@ -14,8 +14,22 @@ function ProductCard({
     }
   };
 
+  const imagePath = product.image
+    ? `/images/${product.image}`
+    : "/images/default-product.jpg";
+
   return (
     <div className="card">
+      <img
+        src={imagePath}
+        alt={product.name}
+        className="product-image"
+        onError={(event) => {
+          event.currentTarget.src =
+            "/images/default-product.jpg";
+        }}
+      />
+
       <h2>{product.name}</h2>
 
       <p>
