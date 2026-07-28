@@ -1,26 +1,28 @@
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   font-family: Arial, Helvetica, sans-serif;
-  background: #f4f6f8;
+  background-color: #f4f6f8;
   color: #222;
-}
-
-* {
-  box-sizing: border-box;
 }
 
 .container {
   width: 90%;
   max-width: 1200px;
-  margin: auto;
-  padding: 24px 0 50px;
+  margin: 0 auto;
+  padding: 25px 0 50px;
 }
+
+/* Header */
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: white;
+  background-color: white;
   padding: 18px 24px;
   margin-bottom: 24px;
   border-radius: 12px;
@@ -36,8 +38,10 @@ body {
   font-weight: bold;
 }
 
+/* Product form */
+
 .product-form-section {
-  background: white;
+  background-color: white;
   padding: 24px;
   margin-bottom: 25px;
   border-radius: 12px;
@@ -46,6 +50,7 @@ body {
 
 .product-form-section h2 {
   margin-top: 0;
+  text-align: center;
 }
 
 .product-form {
@@ -59,8 +64,15 @@ body {
   width: 100%;
   padding: 12px;
   font-size: 15px;
+  font-family: inherit;
   border: 1px solid #ccc;
   border-radius: 7px;
+}
+
+.product-form input:focus,
+.product-form textarea:focus {
+  outline: none;
+  border-color: #1769aa;
 }
 
 .product-form textarea {
@@ -70,42 +82,68 @@ body {
 
 .save-product-btn {
   grid-column: 1 / -1;
-  background: #1769aa;
+  background-color: #1769aa;
 }
 
 .save-product-btn:hover {
-  background: #12558a;
+  background-color: #12558a;
 }
 
-.form-message {
-  margin-bottom: 0;
-  font-weight: bold;
+.cancel-edit-btn {
+  grid-column: 1 / -1;
+  background-color: #6c757d;
 }
+
+.cancel-edit-btn:hover {
+  background-color: #565e64;
+}
+
+.form-message,
+.operation-message {
+  text-align: center;
+  font-weight: bold;
+  background-color: white;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+/* Search */
 
 .search-box {
   width: 100%;
   padding: 13px;
   font-size: 16px;
-  margin-bottom: 25px;
+  margin: 20px 0 25px;
   border: 1px solid #ccc;
   border-radius: 8px;
 }
 
+/* Products */
+
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(280px, 1fr)
+  );
+  gap: 24px;
 }
 
 .card {
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+  background-color: white;
+  padding: 24px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
 }
 
 .card h2 {
   margin-top: 0;
+  margin-bottom: 12px;
+}
+
+.card p {
+  margin: 8px 0;
 }
 
 .price {
@@ -113,23 +151,48 @@ body {
   font-weight: bold;
 }
 
+/* Buttons */
+
 button {
   width: 100%;
-  padding: 11px;
+  padding: 12px;
   border: none;
-  background: #222;
   color: white;
-  border-radius: 6px;
+  font-size: 15px;
+  border-radius: 7px;
   cursor: pointer;
+  margin-top: 9px;
 }
 
-button:hover {
-  background: #444;
+.cart-btn {
+  background-color: #222;
 }
+
+.cart-btn:hover {
+  background-color: #444;
+}
+
+.edit-btn {
+  background-color: #f0ad4e;
+}
+
+.edit-btn:hover {
+  background-color: #d99525;
+}
+
+.delete-btn {
+  background-color: #d9534f;
+}
+
+.delete-btn:hover {
+  background-color: #c9302c;
+}
+
+/* Cart */
 
 .cart {
   margin-top: 40px;
-  background: white;
+  background-color: white;
   padding: 25px;
   border-radius: 10px;
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
@@ -145,36 +208,26 @@ button:hover {
 
 .remove-btn {
   width: 120px;
-  background: #d9534f;
-}
-
-.remove-btn:hover {
-  background: #c9302c;
+  background-color: #d9534f;
 }
 
 .checkout-btn {
-  background: green;
+  background-color: green;
   font-size: 18px;
 }
 
-.checkout-btn:hover {
-  background: #0b7a0b;
-}
-
-.status-message {
+.status-message,
+.error-message,
+.no-products {
   text-align: center;
   font-weight: bold;
 }
 
 .error-message {
-  text-align: center;
   color: #c62828;
-  font-weight: bold;
 }
 
-.no-products {
-  text-align: center;
-}
+/* Mobile */
 
 @media (max-width: 700px) {
   .header {
@@ -188,13 +241,14 @@ button:hover {
   }
 
   .product-form textarea,
-  .save-product-btn {
+  .save-product-btn,
+  .cancel-edit-btn {
     grid-column: auto;
   }
 
   .cart-item {
-    align-items: flex-start;
     flex-direction: column;
+    align-items: flex-start;
   }
 
   .remove-btn {

@@ -15,6 +15,8 @@ function App() {
   const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
+  const [editingProduct, setEditingProduct] = useState(null);
 
   const fetchProducts = async () => {
     try {
@@ -37,45 +39,142 @@ function App() {
 
   const addProduct = async (productData) => {
     try {
+      setMessage("");
+
       await axios.post(API_URL, productData);
       await fetchProducts();
+
+      setMessage("Product added successfully.");
       return true;
     } catch (requestError) {
       console.error("Error adding product:", requestError);
+      setMessage("Failed to add product.");
       return false;
     }
   };
 
+  const updateProduct = async (productId, productData) => {
+    try {
+      setMessage("");
+
+      await axios.put(`${API_URL}/${productId}`, productData);
+      await fetchProducts();
+
+      setEditingProduct(null);
+      setMessage("Product updated successfully.");
+      return true;
+    } catch (requestError) {
+      console.error("Error updating product:", requestError);
+      setMessage("Failed to update product.");
+      return false;
+    }
+  };
+
+  const editProduct = (product) => {
+    setEditingProduct(product);
+    setMessage("");
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
+  const cancelEdit = () => {
+    setEditingProduct(null);
+    setMessage("");
+  };
+
+  const deleteProduct = async (productId) => {
+    try {
+      setMessage("");
+
+      await axios.delete(`${API_URL}/${productId}`);
+
+      setProducts((currentProducts) =>
+        currentProducts.filter(
+          (product) => product.id !== productId
+        )
+      );
+
+      setCart((currentCart) =>
+        currentCart.filter(
+          (item) => item.id !== productId
+        )
+      );
+
+      if (editingProduct?.id === productId) {
+        setEditingProduct(null);
+      }
+
+      setMessage("Product deleted successfully.");
+    } catch (requestError) {
+      console.error("Error deleting product:", requestError);
+      setMessage("Failed to delete product.");
+    }
+  };
+
   const addToCart = (product) => {
-    setCart((currentCart) => [...currentCart, product]);
+    setCart((currentCart) => [
+      ...currentCart,
+      product,
+    ]);
   };
 
   const removeFromCart = (index) => {
     setCart((currentCart) =>
-      currentCart.filter((_, itemIndex) => itemIndex !== index)
+      currentCart.filter(
+        (_, itemIndex) => itemIndex !== index
+      )
     );
   };
 
   const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(search.toLowerCase())
+    product.name
+      .toLowerCase()
+      .includes(search.toLowerCase())
   );
 
   return (
     <div className="container">
       <Header cartCount={cart.length} />
 
-      <ProductForm addProduct={addProduct} />
+      <ProductForm
+        addProduct={addProduct}
+        updateProduct={updateProduct}
+        editingProduct={editingProduct}
+        cancelEdit={cancelEdit}
+      />
 
-      <SearchBar search={search} setSearch={setSearch} />
+      {message && (
+        <p className="operation-message">
+          {message}
+        </p>
+      )}
 
-      {loading && <p className="status-message">Loading products...</p>}
+      <SearchBar
+        search={search}
+        setSearch={setSearch}
+      />
 
-      {error && <p className="error-message">{error}</p>}
+      {loading && (
+        <p className="status-message">
+          Loading products...
+        </p>
+      )}
+
+      {error && (
+        <p className="error-message">
+          {error}
+        </p>
+      )}
 
       {!loading && !error && (
         <ProductList
           products={filteredProducts}
           addToCart={addToCart}
+          deleteProduct={deleteProduct}
+          editProduct={editProduct}
         />
       )}
 

@@ -1,23 +1,46 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-function ProductForm({ addProduct }) {
-  const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    category: "",
-    price: "",
-    stock: "",
-    image: ""
-  });
+const emptyForm = {
+  name: "",
+  description: "",
+  category: "",
+  price: "",
+  stock: "",
+  image: "",
+};
 
+function ProductForm({
+  addProduct,
+  updateProduct,
+  editingProduct,
+  cancelEdit,
+}) {
+  const [formData, setFormData] = useState(emptyForm);
   const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    if (editingProduct) {
+      setFormData({
+        name: editingProduct.name || "",
+        description: editingProduct.description || "",
+        category: editingProduct.category || "",
+        price: editingProduct.price || "",
+        stock: editingProduct.stock || "",
+        image: editingProduct.image || "",
+      });
+
+      setMessage("");
+    } else {
+      setFormData(emptyForm);
+    }
+  }, [editingProduct]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
 
     setFormData((currentData) => ({
       ...currentData,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -29,8 +52,8 @@ function ProductForm({ addProduct }) {
       !formData.name ||
       !formData.description ||
       !formData.category ||
-      !formData.price ||
-      !formData.stock
+      formData.price === "" ||
+      formData.stock === ""
     ) {
       setMessage("Please fill in all required fields.");
       return;
@@ -39,32 +62,55 @@ function ProductForm({ addProduct }) {
     const productData = {
       ...formData,
       price: Number(formData.price),
-      stock: Number(formData.stock)
+      stock: Number(formData.stock),
     };
 
-    const success = await addProduct(productData);
+    let success = false;
+
+    if (editingProduct) {
+      success = await updateProduct(
+        editingProduct.id,
+        productData
+      );
+    } else {
+      success = await addProduct(productData);
+    }
 
     if (success) {
-      setMessage("Product added successfully.");
+      setMessage(
+        editingProduct
+          ? "Product updated successfully."
+          : "Product added successfully."
+      );
 
-      setFormData({
-        name: "",
-        description: "",
-        category: "",
-        price: "",
-        stock: "",
-        image: ""
-      });
+      setFormData(emptyForm);
     } else {
-      setMessage("Failed to add product.");
+      setMessage(
+        editingProduct
+          ? "Failed to update product."
+          : "Failed to add product."
+      );
     }
+  };
+
+  const handleCancel = () => {
+    setFormData(emptyForm);
+    setMessage("");
+    cancelEdit();
   };
 
   return (
     <section className="product-form-section">
-      <h2>Add New Product</h2>
+      <h2>
+        {editingProduct
+          ? "Edit Product"
+          : "Add New Product"}
+      </h2>
 
-      <form className="product-form" onSubmit={handleSubmit}>
+      <form
+        className="product-form"
+        onSubmit={handleSubmit}
+      >
         <input
           type="text"
           name="name"
@@ -116,12 +162,31 @@ function ProductForm({ addProduct }) {
           onChange={handleChange}
         />
 
-        <button type="submit" className="save-product-btn">
-          Save Product
+        <button
+          type="submit"
+          className="save-product-btn"
+        >
+          {editingProduct
+            ? "Update Product"
+            : "Save Product"}
         </button>
+
+        {editingProduct && (
+          <button
+            type="button"
+            className="cancel-edit-btn"
+            onClick={handleCancel}
+          >
+            Cancel Edit
+          </button>
+        )}
       </form>
 
-      {message && <p className="form-message">{message}</p>}
+      {message && (
+        <p className="form-message">
+          {message}
+        </p>
+      )}
     </section>
   );
 }
