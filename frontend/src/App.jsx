@@ -5,6 +5,7 @@ import SearchBar from "./components/SearchBar";
 import ProductList from "./components/ProductList";
 import Cart from "./components/Cart";
 import ProductForm from "./components/ProductForm";
+import CategoryFilter from "./components/CategoryFilter";
 import "./App.css";
 
 const API_URL = "http://localhost:5000/api/products";
@@ -12,6 +13,7 @@ const API_URL = "http://localhost:5000/api/products";
 function App() {
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
   const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -129,11 +131,26 @@ function App() {
     );
   };
 
-  const filteredProducts = products.filter((product) =>
-    product.name
+  const categories = [
+    "All",
+    ...new Set(
+      products
+        .map((product) => product.category)
+        .filter(Boolean)
+    ),
+  ];
+
+  const filteredProducts = products.filter((product) => {
+    const matchesSearch = product.name
       .toLowerCase()
-      .includes(search.toLowerCase())
-  );
+      .includes(search.toLowerCase());
+
+    const matchesCategory =
+      selectedCategory === "All" ||
+      product.category === selectedCategory;
+
+    return matchesSearch && matchesCategory;
+  });
 
   return (
     <div className="container">
@@ -155,6 +172,12 @@ function App() {
       <SearchBar
         search={search}
         setSearch={setSearch}
+      />
+
+      <CategoryFilter
+        categories={categories}
+        selectedCategory={selectedCategory}
+        setSelectedCategory={setSelectedCategory}
       />
 
       {loading && (

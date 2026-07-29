@@ -263,3 +263,36 @@ button {
   border-radius: 8px;
   background-color: #f8f8f8;
 }
+/* Category Filter */
+
+.category-filter {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  flex-wrap: wrap;
+  margin: 20px 0;
+}
+
+.category-btn {
+  width: auto;              /* <-- This fixes the issue */
+  min-width: 120px;
+  padding: 10px 22px;
+  border: none;
+  border-radius: 25px;
+  background-color: #e5e7eb;
+  color: #333;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.category-btn:hover {
+  background-color: #2563eb;
+  color: white;
+}
+
+.category-btn.active {
+  background-color: #2563eb;
+  color: white;
+}
