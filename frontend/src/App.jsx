@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { Route, Routes } from "react-router-dom";
+
 import Header from "./components/Header";
 import SearchBar from "./components/SearchBar";
 import ProductList from "./components/ProductList";
 import Cart from "./components/Cart";
 import ProductForm from "./components/ProductForm";
 import CategoryFilter from "./components/CategoryFilter";
+import ProductDetails from "./components/ProductDetails";
+
 import "./App.css";
 
 const API_URL = "http://localhost:5000/api/products";
@@ -152,10 +156,8 @@ function App() {
     return matchesSearch && matchesCategory;
   });
 
-  return (
-    <div className="container">
-      <Header cartCount={cart.length} />
-
+  const homePage = (
+    <>
       <ProductForm
         addProduct={addProduct}
         updateProduct={updateProduct}
@@ -205,6 +207,32 @@ function App() {
         cart={cart}
         removeFromCart={removeFromCart}
       />
+    </>
+  );
+
+  return (
+    <div className="container">
+      <Header cartCount={cart.length} />
+
+      <Routes>
+        <Route path="/" element={homePage} />
+
+        <Route
+          path="/product/:id"
+          element={
+            loading ? (
+              <p className="status-message">
+                Loading product...
+              </p>
+            ) : (
+              <ProductDetails
+                products={products}
+                addToCart={addToCart}
+              />
+            )
+          }
+        />
+      </Routes>
     </div>
   );
 }

@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 function ProductCard({
   product,
   addToCart,
@@ -41,6 +43,13 @@ function ProductCard({
       <p className="price">₹ {product.price}</p>
 
       <p>Stock: {product.stock}</p>
+
+      <Link
+        to={`/product/${product.id}`}
+        className="details-link"
+      >
+        View Details
+      </Link>
 
       <button
         className="cart-btn"
